@@ -1,0 +1,41 @@
+.css-ffhzg2{
+    background-image: url("https://assets.spe.org/dims4/default/446b9f6/2147483647/strip/true/crop/1100x506+0+0/resize/800x368!/quality/90/?url=http%3A%2F%2Fspe-brightspot.s3.amazonaws.com%2F04%2F4c%2Fd157cdde4eaeb91436b4e6fb3d65%2Fdatarobot.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.background-blur::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* Adjust the transparency as needed */
+    backdrop-filter: blur(20px); /* Adjust the blur intensity as needed */
+  }
+
+span.css-10trblm.eqr7zpz0 {
+    background-color: rgba(240, 248, 255, 0.671);
+    color:black;    
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+.css-1om1ktf div {
+    width: 700px;
+    height: 50px;
+    border-radius: 20px;
+ }
+
+.logo{
+    position:fixed;
+    top:0;
+    left:0;
+    max-width:100px;
+    z-index: 9999;
+}
+ 
+ 

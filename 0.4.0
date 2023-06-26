@@ -1,0 +1,29 @@
+Collecting FuzzyTM
+  Downloading FuzzyTM-2.0.5-py3-none-any.whl (29 kB)
+Requirement already satisfied: scipy in c:\users\user\anaconda3\lib\site-packages (from FuzzyTM) (1.7.1)
+Requirement already satisfied: pandas in c:\users\user\anaconda3\lib\site-packages (from FuzzyTM) (2.0.2)
+Requirement already satisfied: numpy in c:\users\user\anaconda3\lib\site-packages (from FuzzyTM) (1.22.4)
+Collecting pyfume
+  Downloading pyFUME-0.2.25-py3-none-any.whl (67 kB)
+Requirement already satisfied: tzdata>=2022.1 in c:\users\user\anaconda3\lib\site-packages (from pandas->FuzzyTM) (2023.3)
+Requirement already satisfied: python-dateutil>=2.8.2 in c:\users\user\anaconda3\lib\site-packages (from pandas->FuzzyTM) (2.8.2)
+Requirement already satisfied: pytz>=2020.1 in c:\users\user\anaconda3\lib\site-packages (from pandas->FuzzyTM) (2021.3)
+Requirement already satisfied: six>=1.5 in c:\users\user\anaconda3\lib\site-packages (from python-dateutil>=2.8.2->pandas->FuzzyTM) (1.16.0)
+Collecting fst-pso
+  Downloading fst-pso-1.8.1.tar.gz (18 kB)
+Collecting simpful
+  Downloading simpful-2.11.0-py3-none-any.whl (32 kB)
+Collecting miniful
+  Downloading miniful-0.0.6.tar.gz (2.8 kB)
+Building wheels for collected packages: fst-pso, miniful
+  Building wheel for fst-pso (setup.py): started
+  Building wheel for fst-pso (setup.py): finished with status 'done'
+  Created wheel for fst-pso: filename=fst_pso-1.8.1-py3-none-any.whl size=20445 sha256=9c184edda31a94148b937e15c982424eda2960a0bdb0aaba258eb3f507b76426
+  Stored in directory: c:\users\user\appdata\local\pip\cache\wheels\99\66\48\d7ce0c6927f6abf167bbcdee537affc7b92c03632f78028411
+  Building wheel for miniful (setup.py): started
+  Building wheel for miniful (setup.py): finished with status 'done'
+  Created wheel for miniful: filename=miniful-0.0.6-py3-none-any.whl size=3530 sha256=e92d54417dc7c6dc6fd395c7ba43e91876fd3e3a2773c79330fddd7c88ea6792
+  Stored in directory: c:\users\user\appdata\local\pip\cache\wheels\d9\c7\71\db1d4646d963b34c530667501d3d6f34c0825eaffae2f0f2cb
+Successfully built fst-pso miniful
+Installing collected packages: miniful, simpful, fst-pso, pyfume, FuzzyTM
+Successfully installed FuzzyTM-2.0.5 fst-pso-1.8.1 miniful-0.0.6 pyfume-0.2.25 simpful-2.11.0
