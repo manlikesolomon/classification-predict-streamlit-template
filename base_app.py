@@ -55,7 +55,7 @@ def main():
 	# Creating sidebar with selection box -
 	# you can create multiple pages this way
 	
-	logo1 = Image.open('Images/ggb2.jpg')
+	logo1 = Image.open('Images/ggb2.png')
 	st.sidebar.image(logo1, use_column_width=True)
 	options = ["Home", "Prediction", "Information"]
 	selection = st.sidebar.selectbox("Choose Option", options)
