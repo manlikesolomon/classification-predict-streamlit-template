@@ -51,11 +51,11 @@ def main():
 	#logo2 = Image.open('Images/gg.png')
 	st.image(logo, use_column_width=True)
 	#st.image(logo2)
-	st.markdown(f'<img src="http://54.154.172.124:5000/media/6b4b9df26b5cb297db50888a170735f06acdcd490592b420e511ae81.png" alt="logo" class="logo-image">', unsafe_allow_html=True)
+	st.markdown(f'<img src="http://ec2-54-154-172-124.eu-west-1.compute.amazonaws.com/media/6b4b9df26b5cb297db50888a170735f06acdcd490592b420e511ae81.png" alt="logo" class="logo-image">', unsafe_allow_html=True)
 	# Creating sidebar with selection box -
 	# you can create multiple pages this way
 	
-	logo1 = Image.open('Images/ggb.jpg')
+	logo1 = Image.open('Images/ggb2.jpg')
 	st.sidebar.image(logo1, use_column_width=True)
 	options = ["Home", "Prediction", "Information"]
 	selection = st.sidebar.selectbox("Choose Option", options)
