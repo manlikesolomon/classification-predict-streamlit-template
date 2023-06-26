@@ -30,10 +30,10 @@ span.css-10trblm.eqr7zpz0 {
     border-radius: 20px;
  }
 
-.logo{
+.logo-image{
     position:fixed;
-    top:0;
-    left:0;
+    top:55px;
+    right:145px;
     max-width:100px;
     z-index: 9999;
 }
