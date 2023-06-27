@@ -12,7 +12,7 @@
     right: 0;
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.5); /* Adjust the transparency as needed */
-    backdrop-filter: blur(20px); /* Adjust the blur intensity as needed */
+    backdrop-filter: blur(70px); /* Adjust the blur intensity as needed */
   }
 
 span.css-10trblm.eqr7zpz0 {
@@ -30,12 +30,33 @@ span.css-10trblm.eqr7zpz0 {
     border-radius: 20px;
  }
 
-.logo-image{
-    position:fixed;
-    top:55px;
-    right:145px;
-    max-width:100px;
-    z-index: 9999;
+.css-nahz7x p{
+    color:#fff;
+    font-size: 20px;
+    background-color: rgba(120, 187, 241, 0.548);
+    backdrop-filter: blur(5px);
+    text-align: justify;
+    padding: 20px;
+    border-radius: 12px;
+
 }
  
+.css-nahz7x li{
+    color:#fff;
+    font-size: 20px;
+    background-color: rgba(120, 187, 241, 0.548);
+    backdrop-filter: blur(5px);
+    text-align: justify;
+    padding: 20px;
+    border-radius: 12px;
+}
  
+.st-n9{
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.st-nl{
+    background-color: rgba(120, 187, 241, 0.548);
+    backdrop-filter: blur(5px) 
+}

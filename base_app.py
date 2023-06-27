@@ -47,26 +47,26 @@ def main():
 	with open('design.css') as designs:
 		st.markdown(f"<style>{designs.read()}</style>", unsafe_allow_html=True)
 
-	logo = Image.open('Images/white.png')
+	logo = Image.open('Images/GS.png')
 	#logo2 = Image.open('Images/gg.png')
 	st.image(logo, use_column_width=True)
 	#st.image(logo2)
-	st.markdown(f'<img src="http://ec2-54-154-172-124.eu-west-1.compute.amazonaws.com/media/6b4b9df26b5cb297db50888a170735f06acdcd490592b420e511ae81.png" alt="logo" class="logo-image">', unsafe_allow_html=True)
+	#st.markdown(f'<img src="http://localhost:8501/media/6b4b9df26b5cb297db50888a170735f06acdcd490592b420e511ae81.png" alt="logo" class="logo-image">', unsafe_allow_html=True)
 	# Creating sidebar with selection box -
 	# you can create multiple pages this way
 	
 	logo1 = Image.open('Images/ggb2.png')
 	st.sidebar.image(logo1, use_column_width=True)
-	options = ["Home", "Prediction", "Information"]
+	options = ["Home", "Information", "Explore", "Prediction", 'Documentation']
 	selection = st.sidebar.selectbox("Choose Option", options)
 	
 	#building out Homepage
 	if selection == "Home":
 		st.markdown('# HOME')
 		if st.checkbox('About US'):
-			st.info("## Pioneers")
+			st.info("## Welcome to GreenGraph Solutions!🌟")
 			st.markdown('---')
-			st.markdown('Welcome to GreenGraph Solutions! We are not just a data science group; we are visionaries, innovators, and pioneers in the world of data-driven solutions. With a relentless passion for harnessing the power of data, we have embarked on a mission to shape the future through our cutting-edge predictive analytics capabilities. At GreenGraph Solutions, we believe that data holds the key to unlocking endless possibilities. We combine our expertise in machine learning, artificial intelligence, and advanced analytics to uncover hidden insights, solve complex problems, and drive informed decision-making. Our team of talented data scientists, engineers, and domain experts work tirelessly to develop customized solutions that empower businesses and organizations across industries. What sets us apart is our unwavering commitment to delivering excellence. We leverage the latest technologies and employ state-of-the-art methodologies to ensure the highest level of accuracy, reliability, and scalability in our predictions. Our track record of success speaks for itself as we have helped numerous clients achieve remarkable outcomes and gain a competitive edge in their respective fields. Beyond our technical prowess, we pride ourselves on our collaborative approach and client-centric mindset. We work closely with our partners, understanding their unique challenges and goals, to co-create tailored solutions that drive meaningful impact. Our dedication to building long-term relationships and providing exceptional customer service sets us apart as a trusted advisor and strategic partner. Join us on this exhilarating journey as we redefine what is possible in the world of data science. Let GreenGraph Solutions be your trusted guide as we navigate the vast landscape of data, transforming it into actionable insights and unlocking the true potential of your business. Together, let us shape a brighter, data-driven future. GreenGraph Solutions - Where Data Meets Possibilities.')
+			st.markdown('We are not just a data science group; we are visionaries, innovators, and pioneers in the world of data-driven solutions. With a relentless passion for harnessing the power of data, we have embarked on a mission to shape the future through our cutting-edge predictive analytics capabilities. \n- At GreenGraph Solutions, we believe that data holds the key to unlocking endless possibilities. We combine our expertise in machine learning, artificial intelligence, and advanced analytics to uncover hidden insights, solve complex problems, and drive informed decision-making. \n- What sets us apart is our unwavering commitment to delivering excellence. We leverage the latest technologies and employ state-of-the-art methodologies to ensure the highest level of accuracy, reliability, and scalability in our predictions. \n Beyond our technical prowess, we pride ourselves on our collaborative approach and client-centric mindset. Our dedication to building long-term relationships and providing exceptional customer service sets us apart as a trusted advisor and strategic partner. \n- Join us on this exhilarating journey as we redefine what is possible in the world of data science. Let GreenGraph Solutions be your trusted guide as we navigate the vast landscape of data, transforming it into actionable insights and unlocking the true potential of your business. Together, let us shape a brighter, data-driven future. \n- GreenGraph Solutions - **Where Data Meets Possibilities🌈.**')
 		
 
 	# Building out the "Information" page
@@ -94,19 +94,78 @@ def main():
 			# Try loading in multiple models to give the user a choice
 			predictor = joblib.load(open(os.path.join("resources/Logistic_regression.pkl"),"rb"))
 			prediction = predictor.predict(vect_text)
+			
 
 			# When model has successfully run, will print prediction
 			# You can use a dictionary or similar structure to make this output
 			# more human interpretable.
+			up = Image.open('Images/Thumb_up2.png')
+			down = Image.open('Images/Thumb_down2.png')
+			neutral = Image.open('Images/neutral2.png')
+			nerd = Image.open('Images/nerd2.png')
 			if prediction == [-1]:
 				st.success("This text is by an ANTI-climate change")
+				st.image(down, use_column_width=True)
 			elif prediction == [1]:
 				st.success("This text is by a PRO (A believer of climate change)")
+				st.image(up, use_column_width=True)
 			elif prediction == [2]:
 				st.success("This text is by an NEWS type (Strictly follows facts of issues)")
+				st.image(nerd, use_column_width=True)
 			elif prediction == [0]:
 				st.success('This text is by a NEUTRAL person')
-	
+				st.image(neutral, use_column_width=True)
+
+	#Building out the Explore page
+	n_cloud= Image.open('Images/neutral cloud.png')
+	ns_cloud= Image.open('Images/news_cloud.png')
+	p_cloud= Image.open('Images/pro_cloud.png')
+	a_cloud= Image.open('Images/anti_cloud.png')
+	bar = Image.open('Images/bar.png')
+
+	if selection == "Explore":
+		st.write('### Explore Data Statistics')
+		st.markdown('---')
+		with st.expander('# What tweeters are tweeting about climate change'):
+			if st.checkbox('The Pro(Believers of Climate Change)'):
+				st.image(p_cloud, use_column_width=True)
+			if st.checkbox('The Anti(Non-believers of climate change)'):
+				st.image(a_cloud, use_column_width=True)
+			if st.checkbox('The News type(Relies of facts)'):
+				st.image(ns_cloud, use_column_width=True)
+			if st.checkbox('The Neutral(Have no stance)'):
+				st.image(n_cloud, use_column_width=True)
+
+		with st.expander('# Who is dominating our data'):
+			st.image(bar, use_column_width=True)
+
+	#Building out Documentation Page
+	if selection == 'Documentation':
+		st.write('### App Documentation')
+		st.markdown('---')
+		with st.expander('# Introduction'):
+			st.markdown('Welcome to the documentation for the Climate Belief classification web app. This app provides a powerful tool for making predictions about an individual\'s belief in climate change based on their opinions and sentiments related to the topic. By leveraging natural language processing and machine learning techniques, the Climate Belief app aims to analyze and classify textual data to determine if a person believes in climate change or not.')
+		
+		with st.expander('# KeyFeatures'):
+			st.markdown('**Sentiment Analysis:** The GreenGraph climate belief app employs advanced sentiment analysis algorithms to interpret the sentiments expressed in text data. By understanding the emotional tone, attitudes, and opinions conveyed in the input, it facilitates accurate prediction of climate change beliefs.')
+			st.markdown('**Machine Learning Models:** The library incorporates a trained machine learning model specifically designed for climate change belief prediction. This model has been trained on a diverse dataset and can provide reliable predictions based on various inputs.')
+			st.markdown('**No Installation required:** The app offers a simple and straightforward usage on the internet without any need for installation and its requiremnts, making it effortless to usw on all devices. By following the provided guidelines, you can seamlessly incorporate climate change belief predictions into your workflow.')
+		
+		with st.expander('# Benefits Of The Climate Belief App'):
+			st.markdown('**Data-Driven Decision Making:** By utilizing GreenGraph, you can make data-driven decisions and gain insights into public opinion on climate change. This can be valuable for researchers, policymakers, and organizations seeking to understand public sentiment and tailor their strategies accordingly.')
+			st.markdown('**Efficient Resource Allocation:** The ability to predict climate change beliefs can help allocate resources effectively. Organizations focused on climate advocacy, education, or public outreach can utilize Climate Belief to identify target audiences or allocate resources to regions where climate change skepticism may be more prevalent.')
+			st.markdown('**Improved Communication and Understanding:** GreenGraph can contribute to fostering better communication and understanding between individuals with different perspectives on climate change. By recognizing the beliefs of others, it can help facilitate constructive discussions, empathy, and shared understanding.')
+
+		with st.expander('# Usage'):
+			st.markdown('The method of using the web app is as simple as navigating to the prediction tab in the navigation list of the sidepane, typing in the tweets in the text box and hitting \"submit\". In a few seconds your prediction will be out and ready in an understandably and interpretable format.')
+
+		with st.expander('# You May Be Wondering...'):
+			if st.checkbox(' What type of textual input does the app support?'):
+				st.markdown('GreenGraph can process a wide range of textual input, including news articles, social media posts, blog posts, forum discussions, and any other form of text that expresses opinions or sentiments about climate change.')
+			if st.checkbox('How accurate are the predictions made by GreenGraph?'):
+				st.markdown('The accuracy of predictions depends on various factors, including the quality of the training data, the diversity of the input, and the specific context in which the predictions are made. ClimateBelief strives to provide reliable and accurate predictions, but it\'s important to note that no prediction model is 100%\ accurate. It is recommended to evaluate the performance of the model in your specific application or dataset.')
+			if st.checkbox('Are there any limitations or considerations when using GreenGraph?'):
+				st.markdown('While GreenGraph provides valuable insights, it\'s important to consider the limitations of any prediction model. ClimateBelief relies on the information and sentiments expressed in the text, which means it may not account for other factors that influence an individual\'s beliefs, such as personal experiences or background. Additionally, the predictions are based on probabilistic models and may not always align perfectly with individual beliefs. It\'s advisable to use ClimateBelief as a tool to augment understanding rather than relying solely on its predictions.')
 # Required to let Streamlit instantiate our web app.  
 if __name__ == '__main__':
 	main()
