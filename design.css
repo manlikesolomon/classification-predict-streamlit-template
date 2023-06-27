@@ -51,12 +51,12 @@ span.css-10trblm.eqr7zpz0 {
     border-radius: 12px;
 }
  
-.st-n9{
+.streamlit-expanderHeader.st-ff{
     font-size: 20px;
     font-weight: bold;
 }
 
-.st-nl{
+.streamlit-expanderContent.st-cf{
     background-color: rgba(120, 187, 241, 0.548);
     backdrop-filter: blur(5px) 
 }
