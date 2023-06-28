@@ -34,6 +34,7 @@ import re
 from nltk.tokenize import TreebankWordTokenizer
 from nltk.stem import WordNetLemmatizer
 nltk.download('stopwords')
+nltk.download('wordnet')
 from nltk.corpus import stopwords
 
 
