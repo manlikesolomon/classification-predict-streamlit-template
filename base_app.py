@@ -28,6 +28,12 @@ from PIL import Image
 import os
 # Data dependencies
 import pandas as pd
+import string
+import nltk
+import re
+from nltk.tokenize import TreebankWordTokenizer
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import stopwords
 
 
 # Vectorizer
@@ -36,6 +42,40 @@ tweet_cv = joblib.load(news_vectorizer) # loading your vectorizer from the pkl f
 
 # Load your raw data
 raw = pd.read_csv("resources/train.csv")
+
+def preprocess(message):
+    punctuations = string.punctuation
+    stopwords_english = stopwords.words('english')
+    # remove hashtag(#) from tweet
+    message = re.sub('#','',message)
+    # remove oldstyle 'RT' from our tweets
+    message = re.sub(r'^RT[\s]+','',message)
+    # remove hyperlink
+    message = re.sub(r'https?://[^s\n\r]+','',message)
+    # Remove "��"
+    message = re.sub("��", "",message)
+    # Remove text starting with "@"
+    message = re.sub(r"@\w+\s?", "", message)
+    # Remove newline followed by any character/digit
+    message = re.sub(r"\n.", "", message)
+    # convert our text to lower case
+    message = message.lower()
+    # remove punctuations
+    message = ''.join([word for word in message if word not in punctuations])
+    # tokenize
+    tokenizer = TreebankWordTokenizer()
+    message = tokenizer.tokenize(message)
+    # remove stop words
+    message = [word for word in message if word not in stopwords_english]
+
+    # lemmatize text
+    lemmatizer = WordNetLemmatizer()
+    lem_message = []
+
+    for word in message:
+        lem_message.append(lemmatizer.lemmatize(word))
+
+    return " ".join(lem_message)
 	
 # The main function where we will build the actual app
 def main():
@@ -86,6 +126,7 @@ def main():
 	if selection == "Prediction":
 		# Creating a text box for user input
 		tweet_text = st.text_area("Enter Text","Type Here")
+		tweet_text = preprocess(tweet_text)
 
 		if st.button("Submit"):
 			# Transforming user input with vectorizer
