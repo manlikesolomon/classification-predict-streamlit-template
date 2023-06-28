@@ -33,6 +33,7 @@ import nltk
 import re
 from nltk.tokenize import TreebankWordTokenizer
 from nltk.stem import WordNetLemmatizer
+nltk.download('stopwords')
 from nltk.corpus import stopwords
 
 
