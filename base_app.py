@@ -36,7 +36,10 @@ from nltk.stem import WordNetLemmatizer
 nltk.download('stopwords')
 nltk.download('wordnet')
 from nltk.corpus import stopwords
-
+import matplotlib.pyplot as plt
+from collections import Counter
+import base64
+st.set_option('deprecation.showPyplotGlobalUse', False)
 
 # Vectorizer
 news_vectorizer = open("resources/vectorizer_max.pkl","rb")
@@ -78,7 +81,99 @@ def preprocess(message):
         lem_message.append(lemmatizer.lemmatize(word))
 
     return " ".join(lem_message)
-	
+
+#Function to perform exploratory data analysis of uploaded csv
+#function to provide word-lengths
+def word_length(data):
+	length = len(data)
+	return length
+
+#function to create a graph of word lengths
+def length_graph(data):
+	fig = plt.hist(data['message_length'])
+	plt.title("Distribution Of Tweet Lenghts")
+	plt.xlabel("Lengths")
+	plt.ylabel('Frequency')
+	st.pyplot()
+
+#function to create dataframes for all classes 
+def classes(data):
+	pro = data[data['Sentiments'] == 'Pro']
+	news = data[data['Sentiments'] == 'News']
+	neutral = data[data['Sentiments'] == 'Neutral']
+	anti = data[data['Sentiments'] == 'Anti']
+	return pro, news, neutral, anti
+
+#function to display graphs of word lengths of each class
+def length_graph_class(data):
+	pro = data[data['Sentiments'] == 'Pro']
+	news = data[data['Sentiments'] == 'News']
+	neutral = data[data['Sentiments'] == 'Neutral']
+	anti = data[data['Sentiments'] == 'Anti']
+	fig = plt.figure(figsize=(10,10))
+	plt.subplot(2,2,1)
+	plt.hist(pro['message_length'],bins=5)
+	plt.title('Distribution of Pro Class Tweet Lengths')
+
+	plt.subplot(2,2,2)
+	plt.hist(news['message_length'],bins=5)
+	plt.title('Distribution of News Class Tweet Lengths')
+
+	plt.subplot(2,2,3)
+	plt.hist(anti['message_length'],bins=5)
+	plt.title('Distribution of Anti Class Tweet Lengths')
+
+	plt.subplot(2,2,4)
+	plt.hist(neutral['message_length'],bins=5)
+	plt.title('Distribution of Neutral Class Tweet Lengths')
+
+	plt.tight_layout()
+	st.pyplot()
+
+#function to create a dataframe containing average tweet lenghts for every class
+def avg_lenght_df(data):
+	pro_avg = round(data.loc[data['Sentiments'] == 'Pro', "message_length"].mean(),3)
+	news_avg = round(data.loc[data['Sentiments'] == 'News', "message_length"].mean(),3)
+	anti_avg = round(data.loc[data['Sentiments'] == 'Anti', "message_length"].mean(),3)
+	neutral_avg = round(data.loc[data['Sentiments'] == 'Neutral', "message_length"].mean(),3)
+	df = pd.DataFrame({
+        'Class': ['Pro', 'News', 'Anti', 'Neutral'],
+        'Average Length': [pro_avg, news_avg, anti_avg, neutral_avg]
+    })
+	return df
+
+#function to create a graph of top ten words for each sentiment
+def top_words(df, title_class, n=10):
+    preprocessed_text = df['Clean_Tweets'].apply(lambda x: x.split())
+    too_common = ['climate', 'change', 'global', 'warming']
+    all_words = [word for sublist in preprocessed_text for word in sublist if word not in too_common]
+    word_freq = Counter(all_words)
+    most_common = word_freq.most_common(n)
+    words, frequencies = zip(*most_common)
+
+    # Display the bar chart using Streamlit
+    st.subheader(f'Top {n} Most Frequent Words in {title_class}')
+    fig, ax = plt.subplots()
+    ax.bar(words, frequencies)
+    ax.set_xlabel('Words')
+    ax.set_ylabel('Frequency')
+    ax.set_title(f'Top {n} Most Frequent Words in {title_class}')
+    plt.xticks(rotation=45)
+    st.pyplot(fig)
+    
+#function to display distribution of sintiments in predictions
+def dominate(data):
+	plt.figure(figsize=(8, 6))
+	sentiment_counts = data['Sentiments'].value_counts()
+	plt.bar(sentiment_counts.index, sentiment_counts.values)
+	plt.xlabel('Sentiments')
+	plt.ylabel('Count')
+	plt.title('Distribution of Sentiments')
+	plt.xticks(rotation=45)
+	st.pyplot()
+
+
+
 # The main function where we will build the actual app
 def main():
 	"""Tweet Classifier App with Streamlit """
@@ -99,7 +194,7 @@ def main():
 	
 	logo1 = Image.open('Images/ggb2.png')
 	st.sidebar.image(logo1, use_column_width=True)
-	options = ["Home", "Information", "Explore", "Prediction", 'Documentation']
+	options = ["Home", "Information", "Explore", "Predict Single Input", "Predict CSV", 'Documentation']
 	selection = st.sidebar.selectbox("Choose Option", options)
 	
 	#building out Homepage
@@ -124,40 +219,212 @@ def main():
 		if st.checkbox('Show raw data'): # data is hidden if box is unchecked
 			st.write(raw[['sentiment', 'message']]) # will write the df to the page
 
-	# Building out the predication page
-	if selection == "Prediction":
+	# Building out the predication page for single input
+	if selection == "Predict Single Input":
+		up = Image.open('Images/Thumb_up2.png')
+		down = Image.open('Images/Thumb_down2.png')
+		neutral = Image.open('Images/neutral2.png')
+		nerd = Image.open('Images/nerd2.png')
 		# Creating a text box for user input
 		tweet_text = st.text_area("Enter Text","Type Here")
 		tweet_text = preprocess(tweet_text)
+		choice = st.selectbox('Choose_model', ['Logistic Regression', 'Logistic Regression With Resampling', 'Naive Bayes'])
+		if choice == 'Logistic Regression With Resampling':
+			if st.button("Submit"):
+				# Transforming user input with vectorizer
+				vect_text = tweet_cv.transform([tweet_text]).toarray()
+				# Load your .pkl file with the model of your choice + make predictions
+				# Try loading in multiple models to give the user a choice
+				predictor = joblib.load(open(os.path.join("resources/model_lr_s.pkl"),"rb"))
+				prediction = predictor.predict(vect_text)
+				# When model has successfully run, will print prediction
+				# You can use a dictionary or similar structure to make this output
+				# more human interpretable.
+				if prediction == [-1]:
+					st.success("This text is by an ANTI-climate change")
+					st.image(down, use_column_width=True)
+				elif prediction == [1]:
+					st.success("This text is by a PRO (A believer of climate change)")
+					st.image(up, use_column_width=True)
+				elif prediction == [2]:
+					st.success("This text is by an NEWS type (Strictly follows facts of issues)")
+					st.image(nerd, use_column_width=True)
+				elif prediction == [0]:
+					st.success('This text is by a NEUTRAL person')
+					st.image(neutral, use_column_width=True)
 
-		if st.button("Submit"):
-			# Transforming user input with vectorizer
-			vect_text = tweet_cv.transform([tweet_text]).toarray()
-			# Load your .pkl file with the model of your choice + make predictions
-			# Try loading in multiple models to give the user a choice
-			predictor = joblib.load(open(os.path.join("resources/model_lr_s.pkl"),"rb"))
-			prediction = predictor.predict(vect_text)
+		if choice == 'Logistic Regression':
+			if st.button("Submit"):
+				# Transforming user input with vectorizer
+				vect_text = tweet_cv.transform([tweet_text]).toarray()
+				# Load your .pkl file with the model of your choice + make predictions
+				# Try loading in multiple models to give the user a choice
+				predictor = joblib.load(open(os.path.join("resources/model_lr_max.pkl"),"rb"))
+				prediction = predictor.predict(vect_text)
+				# When model has successfully run, will print prediction
+				# You can use a dictionary or similar structure to make this output
+				# more human interpretable.
+				if prediction == [-1]:
+					st.success("This text is by an ANTI-climate change")
+					st.image(down, use_column_width=True)
+				elif prediction == [1]:
+					st.success("This text is by a PRO (A believer of climate change)")
+					st.image(up, use_column_width=True)
+				elif prediction == [2]:
+					st.success("This text is by an NEWS type (Strictly follows facts of issues)")
+					st.image(nerd, use_column_width=True)
+				elif prediction == [0]:
+					st.success('This text is by a NEUTRAL person')
+					st.image(neutral, use_column_width=True)
+
+		if choice == 'Naive Bayes':
+			if st.button("Submit"):
+				# Transforming user input with vectorizer
+				vect_text = tweet_cv.transform([tweet_text]).toarray()
+				# Load your .pkl file with the model of your choice + make predictions
+				# Try loading in multiple models to give the user a choice
+				predictor = joblib.load(open(os.path.join("resources/model_nb_max.pkl"),"rb"))
+				prediction = predictor.predict(vect_text)
+				# When model has successfully run, will print prediction
+				# You can use a dictionary or similar structure to make this output
+				# more human interpretable.
+				if prediction == [-1]:
+					st.success("This text is by an ANTI-climate change")
+					st.image(down, use_column_width=True)
+				elif prediction == [1]:
+					st.success("This text is by a PRO (A believer of climate change)")
+					st.image(up, use_column_width=True)
+				elif prediction == [2]:
+					st.success("This text is by an NEWS type (Strictly follows facts of issues)")
+					st.image(nerd, use_column_width=True)
+				elif prediction == [0]:
+					st.success('This text is by a NEUTRAL person')
+					st.image(neutral, use_column_width=True)
+
 			
+			
+	#Building out Prediction page for csv file
+	if selection == "Predict CSV":
+		st.subheader("Predict CSV")
+		uploaded_file = st.file_uploader("Upload CSV", type='csv')
+		if uploaded_file is not None:
+			data = pd.read_csv(uploaded_file)
+			#Display data
+			st.subheader("Uploaded file")
+			st.write(data)
+			data = data.dropna()
+			data.columns = ['Tweets', 'TweetID']
+			data['Clean_Tweets'] = data['Tweets'].apply(preprocess)
+			data['message_length'] = data['Clean_Tweets'].apply(word_length)
+			if st.checkbox("Show Tweets Lengths Chart"):
+				length_graph(data)
+			if st.checkbox('Predict your data'):
+				vect_data = tweet_cv.transform(data['Clean_Tweets'].values).toarray()
+				model_choice = st.selectbox('Choose_model', ['Logistic Regression With Resampling', 'Logistic Regression', 'Naive Bayes'])
+				if model_choice == 'Logistic Regression':
+					predictor = joblib.load(open(os.path.join("resources/model_lr_max.pkl"),"rb"))
+					prediction = predictor.predict(vect_data)
+					st.markdown('### Prediction Results')
+					output_df = pd.DataFrame({'Sentiments':prediction})
+					full_df = output_df.join(data)
+					mapping = {2:'News',1:'Pro',0:'Neutral',-1:'Anti'}
+					full_df['Sentiments'] = full_df['Sentiments'].map(mapping)
+					full_df_2 = full_df[["Tweets", "Sentiments"]]
+					if st.checkbox('Show your predicted data'):
+						st.write(full_df_2)
+					with st.expander("Explore Your Data And Predictions"):
+						if st.checkbox('Who Is Dominating Your Data'):
+							dominate(full_df)
+						if st.checkbox('Show Distribution of Tweet Lenghts For Each Class'):
+							length_graph_class(full_df)
+						if st.checkbox("View Average Length Of Tweets Per Sentiment"):
+							avgs = avg_lenght_df(full_df)
+							st.write(avgs)
+						if st.checkbox('View The Most Tweeted Words By Sentiment'):
+							pro, news, neutral, anti = classes(full_df)
+							if st.checkbox('Pro'):
+								top_words(pro, title_class = "Pro")
+							if st.checkbox('Anti'):
+								top_words(anti, title_class = "Anti")
+							if st.checkbox('News'):
+								top_words(news, title_class = "News")
+							if st.checkbox('Neutral'):
+								top_words(pro, title_class = "Neutral")
+					if st.checkbox("Download Output"):
+						csv = full_df_2.to_csv(index=False)  # Convert DataFrame to CSV
+						b64 = base64.b64encode(csv.encode()).decode()  # Encode CSV as base64
+						href = f'<a href="data:file/csv;base64,{b64}" download="predictions.csv">Download CSV File</a>'
+						st.markdown(href, unsafe_allow_html=True)
 
-			# When model has successfully run, will print prediction
-			# You can use a dictionary or similar structure to make this output
-			# more human interpretable.
-			up = Image.open('Images/Thumb_up2.png')
-			down = Image.open('Images/Thumb_down2.png')
-			neutral = Image.open('Images/neutral2.png')
-			nerd = Image.open('Images/nerd2.png')
-			if prediction == [-1]:
-				st.success("This text is by an ANTI-climate change")
-				st.image(down, use_column_width=True)
-			elif prediction == [1]:
-				st.success("This text is by a PRO (A believer of climate change)")
-				st.image(up, use_column_width=True)
-			elif prediction == [2]:
-				st.success("This text is by an NEWS type (Strictly follows facts of issues)")
-				st.image(nerd, use_column_width=True)
-			elif prediction == [0]:
-				st.success('This text is by a NEUTRAL person')
-				st.image(neutral, use_column_width=True)
+				if model_choice == 'Logistic Regression With Resampling':
+					predictor = joblib.load(open(os.path.join("resources/model_lr_s.pkl"),"rb"))
+					prediction = predictor.predict(vect_data)
+					st.markdown('### Prediction Results')
+					output_df = pd.DataFrame({'Sentiments':prediction})
+					full_df = output_df.join(data)
+					mapping = {2:'News',1:'Pro',0:'Neutral',-1:'Anti'}
+					full_df['Sentiments'] = full_df['Sentiments'].map(mapping)
+					full_df_2 = full_df[["Tweets", "Sentiments"]]
+					if st.checkbox('Show your predicted data'):
+						st.write(full_df_2)
+					with st.expander("Explore Your Data And Predictions"):
+						if st.checkbox('Who Is Dominating Your Data'):
+							dominate(full_df)
+						if st.checkbox('Show Distribution of Tweet Lenghts For Each Class'):
+							length_graph_class(full_df)
+						if st.checkbox("View Average Length Of Tweets Per Sentiment"):
+							avgs = avg_lenght_df(full_df)
+							st.write(avgs)
+						if st.checkbox('View The Most Tweeted Words By Sentiment'):
+							pro, news, neutral, anti = classes(full_df)
+							if st.checkbox('Pro'):
+								top_words(pro, title_class = "Pro")
+							if st.checkbox('Anti'):
+								top_words(anti, title_class = "Anti")
+							if st.checkbox('News'):
+								top_words(news, title_class = "News")
+							if st.checkbox('Neutral'):
+								top_words(pro, title_class = "Neutral")
+					if st.checkbox("Download Output"):
+						csv = full_df_2.to_csv(index=False)  # Convert DataFrame to CSV
+						b64 = base64.b64encode(csv.encode()).decode()  # Encode CSV as base64
+						href = f'<a href="data:file/csv;base64,{b64}" download="predictions.csv">Download CSV File</a>'
+						st.markdown(href, unsafe_allow_html=True)
+
+				if model_choice == 'Naive Bayes':
+					predictor = joblib.load(open(os.path.join("resources/model_nb_max.pkl"),"rb"))
+					prediction = predictor.predict(vect_data)
+					st.markdown('### Prediction Results')
+					output_df = pd.DataFrame({'Sentiments':prediction})
+					full_df = output_df.join(data)
+					mapping = {2:'News',1:'Pro',0:'Neutral',-1:'Anti'}
+					full_df['Sentiments'] = full_df['Sentiments'].map(mapping)
+					full_df_2 = full_df[["Tweets", "Sentiments"]]
+					if st.checkbox('Show your predicted data'):
+						st.write(full_df_2)
+					with st.expander("Explore Your Data And Predictions"):
+						if st.checkbox('Who Is Dominating Your Data'):
+							dominate(full_df)
+						if st.checkbox('Show Distribution of Tweet Lenghts For Each Class'):
+							length_graph_class(full_df)
+						if st.checkbox("View Average Length Of Tweets Per Sentiment"):
+							avgs = avg_lenght_df(full_df)
+							st.write(avgs)
+						if st.checkbox('View The Most Tweeted Words By Sentiment'):
+							pro, news, neutral, anti = classes(full_df)
+							if st.checkbox('Pro'):
+								top_words(pro, title_class = "Pro")
+							if st.checkbox('Anti'):
+								top_words(anti, title_class = "Anti")
+							if st.checkbox('News'):
+								top_words(news, title_class = "News")
+							if st.checkbox('Neutral'):
+								top_words(pro, title_class = "Neutral")
+					if st.checkbox("Download Output"):
+						csv = full_df_2.to_csv(index=False)  # Convert DataFrame to CSV
+						b64 = base64.b64encode(csv.encode()).decode()  # Encode CSV as base64
+						href = f'<a href="data:file/csv;base64,{b64}" download="predictions.csv">Download CSV File</a>'
+						st.markdown(href, unsafe_allow_html=True)
 
 	#Building out the Explore page
 	n_cloud= Image.open('Images/neutral cloud.png')
@@ -165,7 +432,12 @@ def main():
 	p_cloud= Image.open('Images/pro_cloud.png')
 	a_cloud= Image.open('Images/anti_cloud.png')
 	bar = Image.open('Images/bar.png')
-
+	tweet_length = Image.open("Images/tweet length dist.png")
+	tweet_length_classes = Image.open('Images/tweet length dist per class.png')
+	word_frequency_pro = Image.open('Images/Pros.png')
+	word_frequency_anti = Image.open('Images/Antis.png')
+	word_frequency_news = Image.open('Images/News.png')
+	word_frequency_neutral = Image.open('Images/Neutrals.png')
 	if selection == "Explore":
 		st.write('### Explore Data Statistics')
 		st.markdown('---')
@@ -181,6 +453,26 @@ def main():
 
 		with st.expander('# Who is dominating our data'):
 			st.image(bar, use_column_width=True)
+
+		with st.expander('# Tweet Length Distribution'):
+			st.markdown('The histogram below provides insights into the tweet lengths of the users in our sample dataset. It indicates that the majority of users have tweets ranging from 125 to 150 characters in length.')
+			st.image(tweet_length, use_column_width=True)
+
+		with st.expander('Tweet Length Distribution Per Class'):
+			st.markdown('Here below, the tweet length distribution has been displayed according to each class. They indicate the distribution of tweet lengths for each class in which majority of the Pros are texting within 100 to 150 wcharacters and majority of the other classes, as long as 100 to 140 characters')
+			st.image(tweet_length_classes)
+
+		with st.expander("Most Tweeted Words by Sentiment Types"):
+			st.markdown('The barcharts above show us the most used words by members of each of the sentimental classes.')
+			if st.checkbox('Pro'):
+				st.image(word_frequency_pro, use_column_width=True)
+			if st.checkbox('Anti'):
+				st.image(word_frequency_anti, use_column_width=True)
+			if st.checkbox('News'):
+				st.image(word_frequency_news, use_column_width=True)
+			if st.checkbox('Neutral'):
+				st.image(word_frequency_neutral, use_column_width=True)
+
 
 	#Building out Documentation Page
 	if selection == 'Documentation':
@@ -200,7 +492,10 @@ def main():
 			st.markdown('**Improved Communication and Understanding:** GreenGraph can contribute to fostering better communication and understanding between individuals with different perspectives on climate change. By recognizing the beliefs of others, it can help facilitate constructive discussions, empathy, and shared understanding.')
 
 		with st.expander('# Usage'):
-			st.markdown('The method of using the web app is as simple as navigating to the prediction tab in the navigation list of the sidepane, typing in the tweets in the text box and hitting \"submit\". In a few seconds your prediction will be out and ready in an understandably and interpretable format.')
+			st.markdown('This app provides the choice of either predicting single lines of tweet text or csvs containing several lines of tweets. We have integrated different model types with different capabailities for users to choose from.')
+			st.markdown('Predicting single lines of tweets is as simple as navigating to the prediction tab in the navigation list of the sidepane, typing in the tweets in the text box following by choosing your choice of model and hitting \"submit". In a few seconds your prediction will be out and ready in an understandably and interpretable format.')
+			st.markdown('In cases where it is necessary to predict bulk data, in the form of csv, all that is needed to be done is navigate to the \"Predict CSV", upload the csv, select the \"Predict Your Data" checkbox, choose the model of your choice, select the \"Download Output" checkbox and select the link the appears. With these steps followed the output containing the data that was fed in with an additional column with the predictions will be downloaded onto your device in csv format. **Note: Your input should be in csv format and strictly should contain two columns (One column containing the tweets or texts and the second containing the IDs for each row.**)')
+			st.markdown('You can as well have a quick peek of a brief statistics of your data on the page. Just select the \"Explore Your Data and Predictions" expander and choose from the options that appear. You can also select the \"Show tweets length charts" checkbox to view a histogram of the length of tweets in your input')
 
 		with st.expander('# You May Be Wondering...'):
 			if st.checkbox(' What type of textual input does the app support?'):
