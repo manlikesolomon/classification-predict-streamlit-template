@@ -332,7 +332,7 @@ def main():
 					full_df_2 = full_df[["Tweets", "Sentiments"]]
 					if st.checkbox('Show your predicted data'):
 						st.write(full_df_2)
-					with st.expander("Explore Your Data And Predictions"):
+					with st.expander("# Explore Your Data And Predictions"):
 						if st.checkbox('Who Is Dominating Your Data'):
 							dominate(full_df)
 						if st.checkbox('Show Distribution of Tweet Lenghts For Each Class'):
@@ -367,7 +367,7 @@ def main():
 					full_df_2 = full_df[["Tweets", "Sentiments"]]
 					if st.checkbox('Show your predicted data'):
 						st.write(full_df_2)
-					with st.expander("Explore Your Data And Predictions"):
+					with st.expander("# Explore Your Data And Predictions"):
 						if st.checkbox('Who Is Dominating Your Data'):
 							dominate(full_df)
 						if st.checkbox('Show Distribution of Tweet Lenghts For Each Class'):
@@ -402,7 +402,7 @@ def main():
 					full_df_2 = full_df[["Tweets", "Sentiments"]]
 					if st.checkbox('Show your predicted data'):
 						st.write(full_df_2)
-					with st.expander("Explore Your Data And Predictions"):
+					with st.expander("# Explore Your Data And Predictions"):
 						if st.checkbox('Who Is Dominating Your Data'):
 							dominate(full_df)
 						if st.checkbox('Show Distribution of Tweet Lenghts For Each Class'):
@@ -458,11 +458,11 @@ def main():
 			st.markdown('The histogram below provides insights into the tweet lengths of the users in our sample dataset. It indicates that the majority of users have tweets ranging from 125 to 150 characters in length.')
 			st.image(tweet_length, use_column_width=True)
 
-		with st.expander('Tweet Length Distribution Per Class'):
+		with st.expander('# Tweet Length Distribution Per Class'):
 			st.markdown('Here below, the tweet length distribution has been displayed according to each class. They indicate the distribution of tweet lengths for each class in which majority of the Pros are texting within 100 to 150 wcharacters and majority of the other classes, as long as 100 to 140 characters')
 			st.image(tweet_length_classes)
 
-		with st.expander("Most Tweeted Words by Sentiment Types"):
+		with st.expander("# Most Tweeted Words by Sentiment Types"):
 			st.markdown('The barcharts above show us the most used words by members of each of the sentimental classes.')
 			if st.checkbox('Pro'):
 				st.image(word_frequency_pro, use_column_width=True)
